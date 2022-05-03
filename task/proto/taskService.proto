@@ -1,0 +1,33 @@
+syntax = "proto3";
+package proto;
+import "taskModel.proto";
+option go_package = "./";
+
+message TaskRequest {
+  uint64 Id = 1;
+  uint64 uid = 2;
+  string title = 3;
+  string content = 4;
+  string start_at = 5;
+  string end_at = 6;
+  int64 status = 7;
+  int64 created_at = 8;
+  int64 updated_at = 9;
+}
+
+message TaskListResponse {
+  repeated TaskModel task_list = 1;
+  uint32 count = 2;
+}
+
+message TaskResponse {
+  TaskModel task = 1;
+}
+
+service TaskService {
+  rpc CreateTask(TaskRequest) returns (TaskResponse);
+  rpc GetListTask(TaskRequest) returns (TaskListResponse);
+  rpc GetOneTask(TaskRequest) returns (TaskResponse);
+  rpc UpdateTask(TaskRequest) returns (TaskResponse);
+  rpc DeleteTask(TaskRequest) returns (TaskResponse);
+}

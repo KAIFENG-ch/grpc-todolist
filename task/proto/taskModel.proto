@@ -1,0 +1,14 @@
+syntax = "proto3";
+package proto;
+option go_package = "./";
+
+message TaskModel {
+  uint64 id = 1;
+  uint64 uid = 2;
+  string title = 3;
+  int64 start_at = 4;
+  int64 end_at = 5;
+  int64 status = 6;
+  int64 created_at = 7;
+  int64 updated_at = 8;
+}
