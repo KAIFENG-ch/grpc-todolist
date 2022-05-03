@@ -9,35 +9,39 @@ import (
 )
 
 type UserService struct {
-
 }
 
-func (us *UserService) UserRegister(ctx context.Context, req *services.UserRequest, resp *services.UserDetailResponse) error {
+var U = UserService{}
+
+func (us *UserService) UserRegister(ctx context.Context, req *services.UserRequest) (resp *services.UserDetailResponse, err error) {
 	if req.Password != req.PasswordConfirm {
 		err := errors.New("两次密码不一致")
-		return err
+		return nil, err
 	}
-	userInfo,err := dao.FindUser(req.UserName)
+	userInfo, err := dao.FindUser(req.UserName)
 	if err != nil {
 		err = errors.New("用户名已存在")
 	}
 	err = dao.CreateUser(userInfo)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	resp.UserDetail = model.Build(userInfo)
-	return nil
+	resp.Code = 200
+	return
 }
 
-func (us *UserService) LoginRequest(ctx context.Context, req *services.UserRequest, resp *services.UserDetailResponse) error {
+func (us *UserService) UserLogin(ctx context.Context, req *services.UserRequest) (resp *services.UserDetailResponse, err error) {
 	users, err := dao.FindUser(req.UserName)
 	if err != nil {
-		return nil
+		resp.Code = 400
+		return
 	}
 	if users.CheckPwd(req.Password) {
 		resp.Code = 400
-		return nil
+		return
 	}
 	resp.UserDetail = model.Build(users)
-	return nil
+	resp.Code = 200
+	return
 }

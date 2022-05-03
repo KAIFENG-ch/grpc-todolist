@@ -1,4 +1,4 @@
-package main
+package conf
 
 import (
 	"fmt"
@@ -12,12 +12,12 @@ type Config struct {
 }
 
 type Sql struct {
-	Db string
-	DbHost string
-	DbPort int
-	DbUser string
+	Db       string
+	DbHost   string
+	DbPort   int
+	DbUser   string
 	Password string
-	DbName string
+	DbName   string
 }
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?"+
 		"charset=utf8mb4&parseTime=True&loc=Local", myConfig.Sql.DbUser,
 		myConfig.Sql.Password, myConfig.Sql.DbHost, myConfig.Sql.DbPort,
-	myConfig.Sql.DbName)
+		myConfig.Sql.DbName)
 	err = model.Database(dsn)
 	if err != nil {
 		log.Println(err)
