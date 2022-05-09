@@ -1,22 +1,36 @@
 package main
 
 import (
-	"go.etcd.io/etcd/clientv3"
 	"google.golang.org/grpc"
 	"log"
-	"time"
-	pb "user/proto"
+	"net"
+	"user/conf"
+	pb "user/proto/proto"
+	"user/register"
 	"user/service"
 )
 
 func main() {
-	_, err := clientv3.New(clientv3.Config{
-		Endpoints:   []string{"127.0.0.1:2379"},
-		DialTimeout: 5 * time.Second,
-	})
+	conf.Init()
+	clientReg, err := register.NewEtcdReg()
+	if err != nil {
+		log.Printf("创建服务错误: %v\n", err)
+	}
+	defer func(clientReg *register.Register) {
+		err := clientReg.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(clientReg)
+	err = clientReg.RegisterServer("etcdUserService", "127.0.0.1:2379", 5)
+	if err != nil {
+		log.Printf("注册错误：%v\n", err)
+	}
+	lis, err := net.Listen("tcp", "127.0.0.1:8001")
 	if err != nil {
 		log.Println(err)
 	}
 	server := grpc.NewServer()
 	pb.RegisterUserServiceServer(server, &service.U)
+	_ = server.Serve(lis)
 }

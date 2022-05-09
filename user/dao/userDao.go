@@ -7,7 +7,7 @@ import (
 func FindUser(name string) (user model.User, err error) {
 	var count int64 = 0
 	if err := model.DB.Model(&model.User{}).Where("username=?", name).Count(&count).Error; err != nil {
-		return
+		return user, err
 	}
 	user = model.User{
 		Username: name,

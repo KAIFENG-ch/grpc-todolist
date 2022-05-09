@@ -1,6 +1,6 @@
 syntax = "proto3";
 package service;
-option go_package = "./";
+option go_package = "./proto";
 
 message UserModel {
   uint32 id = 1;

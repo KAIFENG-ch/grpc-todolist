@@ -1,13 +1,28 @@
 package model
 
-import "github.com/streadway/amqp"
+import (
+	"gorm.io/driver/mysql"
+	_ "gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"time"
+)
 
-var MQ *amqp.Connection
+var DB *gorm.DB
 
-func RabbitMQConnect(connect string) {
-	conn, err := amqp.Dial(connect)
+func Database(dsn string) (err error) {
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
-	MQ = conn
+	sqlDB, err := db.DB()
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
+	sqlDB.SetConnMaxIdleTime(time.Hour)
+	DB = db
+	err = DB.Set("gorm:table_option", "ENGINE=InnoDB").
+		AutoMigrate()
+	if err != nil {
+		panic(err)
+	}
+	return
 }

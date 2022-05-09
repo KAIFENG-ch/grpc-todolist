@@ -5,7 +5,7 @@ import (
 	"errors"
 	"user/dao"
 	"user/model"
-	services "user/proto"
+	services "user/proto/proto"
 )
 
 type UserService struct {

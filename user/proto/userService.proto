@@ -2,7 +2,7 @@ syntax = "proto3";
 package service;
 import "userModel.proto";
 
-option go_package = "./";
+option go_package = "./proto";
 
 message UserRequest {
   string user_name = 1;

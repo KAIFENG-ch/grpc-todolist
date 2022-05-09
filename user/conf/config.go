@@ -20,7 +20,7 @@ type Sql struct {
 	DbName   string
 }
 
-func main() {
+func Init() {
 	viper.SetConfigType("yaml")
 	viper.SetConfigFile("./conf/config.yaml")
 	err := viper.ReadInConfig()

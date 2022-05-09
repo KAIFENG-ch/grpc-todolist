@@ -2,28 +2,29 @@ package service
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/streadway/amqp"
+	"gorm.io/gorm"
+	"log"
+	"task/dao"
 	"task/model"
-	services "task/proto"
+	services "task/proto/pb"
 )
 
-func CreateTask(ctx context.Context, req *services.TaskRequest, resp *services.TaskResponse) error {
-	ch, err := model.MQ.Channel()
-	if err != nil {
-		return err
+type UserTask struct {
+}
+
+var T = &UserTask{}
+
+func (u *UserTask) CreateTask(ctx context.Context, req *services.TaskRequest, resp *services.TaskResponse) error {
+	var task model.Task
+	task = model.Task{
+		Model:   gorm.Model{},
+		Id:      0,
+		Title:   req.Title,
+		Content: req.Content,
 	}
-	q, err := ch.QueueDeclare("task_queue", true, false, false, false, nil)
+	err := dao.CreateTask(task)
 	if err != nil {
-		return err
-	}
-	body, _ := json.Marshal(req)
-	err = ch.Publish("", q.Name, false, false, amqp.Publishing{
-		DeliveryMode: amqp.Persistent,
-		ContentType: "application/json",
-		Body: body,
-	})
-	if err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil

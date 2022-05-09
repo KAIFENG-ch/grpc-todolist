@@ -30,7 +30,7 @@ func NewEtcdResolver() *EtcdResolver {
 	BuildEtcd 该方法用于创建一个etcd解析器，grpc.Dial()会调用该方法，解析器根据key前缀监听etcd服务列表里的变化并跟新本地
 	列表watch,然后注册解析器，创建grpc句柄，使用负载均衡轮询请求服务
 */
-func (e *EtcdResolver) BuildEtcd(target resolver.Target, cc resolver.ClientConn) (resolver.Resolver, error) {
+func (e *EtcdResolver) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOptions) (resolver.Resolver, error) {
 	//指定获取前缀的etcd节点值
 	prefix := "/" + target.Scheme
 	log.Println(prefix)
@@ -56,6 +56,6 @@ func (e *EtcdResolver) BuildEtcd(target resolver.Target, cc resolver.ClientConn)
 	return es, nil
 }
 
-func (e *EtcdResolver) Schema() string {
+func (e *EtcdResolver) Scheme() string {
 	return "etcd"
 }
