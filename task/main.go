@@ -1,40 +1,39 @@
 package main
 
 import (
-	"context"
-	"fmt"
-	"go.etcd.io/etcd/clientv3"
-	"time"
+	"google.golang.org/grpc"
+	"log"
+	"net"
+	"task/conf"
+	"task/proto/pb"
+	"task/register"
+	"task/service"
 )
 
 func main() {
-	etcdReg, err := clientv3.New(clientv3.Config{
-		Endpoints: []string{"127.0.0.1:2379"},
-		DialTimeout: 5 * time.Second,
-	})
+	conf.Init()
+	clientReg, err := register.NewEtcdReg()
 	if err != nil {
+		log.Printf("创建etcd错误:%v\n", err)
 		panic(err)
 	}
-	fmt.Println("connect success")
-	defer func(etcdReg *clientv3.Client) {
-		err := etcdReg.Close()
+	defer func(clientReg *register.Register) {
+		err := clientReg.Close()
 		if err != nil {
-			return
+			log.Println(err)
 		}
-	}(etcdReg)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	_, err = etcdReg.Put(ctx, "lmh", "lmh")
-	cancel()
+	}(clientReg)
+	err = clientReg.RegisterServer("etcdTaskService", "127.0.0.1:2379", 5)
 	if err != nil {
+		log.Printf("注册服务失败：%v\n", err)
 		panic(err)
 	}
-	ctx, cancel = context.WithTimeout(context.Background(), time.Second)
-	resp, err := etcdReg.Get(ctx, "lmh")
-	cancel()
+	lis, err := net.Listen("tcp", "127.0.0.1:8001")
 	if err != nil {
+		log.Println(err)
 		panic(err)
 	}
-	for _, kv := range resp.Kvs {
-		fmt.Printf("%s,%s\n", kv.Key, kv.Value)
-	}
+	server := grpc.NewServer()
+	pb.RegisterTaskServiceServer(server, &service.T)
+	_ = server.Serve(lis)
 }

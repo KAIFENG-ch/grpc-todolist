@@ -4,8 +4,12 @@
 package pb
 
 import (
+	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
 	math "math"
 )
 
@@ -28,8 +32,7 @@ type TaskRequest struct {
 	StartAt              string   `protobuf:"bytes,5,opt,name=start_at,json=startAt,proto3" json:"start_at,omitempty"`
 	EndAt                string   `protobuf:"bytes,6,opt,name=end_at,json=endAt,proto3" json:"end_at,omitempty"`
 	Status               int64    `protobuf:"varint,7,opt,name=status,proto3" json:"status,omitempty"`
-	CreatedAt            int64    `protobuf:"varint,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt            int64    `protobuf:"varint,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	UpdatedAt            int64    `protobuf:"varint,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -105,13 +108,6 @@ func (m *TaskRequest) GetEndAt() string {
 func (m *TaskRequest) GetStatus() int64 {
 	if m != nil {
 		return m.Status
-	}
-	return 0
-}
-
-func (m *TaskRequest) GetCreatedAt() int64 {
-	if m != nil {
-		return m.CreatedAt
 	}
 	return 0
 }
@@ -210,36 +206,260 @@ func (m *TaskResponse) GetTask() *TaskModel {
 }
 
 func init() {
-	proto.RegisterType((*TaskRequest)(nil), "proto.TaskRequest")
-	proto.RegisterType((*TaskListResponse)(nil), "proto.TaskListResponse")
-	proto.RegisterType((*TaskResponse)(nil), "proto.TaskResponse")
+	proto.RegisterType((*TaskRequest)(nil), "service.TaskRequest")
+	proto.RegisterType((*TaskListResponse)(nil), "service.TaskListResponse")
+	proto.RegisterType((*TaskResponse)(nil), "service.TaskResponse")
 }
 
 func init() { proto.RegisterFile("taskService.proto", fileDescriptor_73398b334343aecd) }
 
 var fileDescriptor_73398b334343aecd = []byte{
-	// 364 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x91, 0x4b, 0x4b, 0xfb, 0x40,
-	0x14, 0xc5, 0xc9, 0xa3, 0x69, 0x73, 0xfb, 0x7f, 0xf4, 0x3f, 0x7f, 0x1f, 0x63, 0x41, 0x08, 0xc5,
-	0x45, 0x36, 0x56, 0xa8, 0x76, 0xe3, 0x2e, 0x2a, 0x94, 0x82, 0x22, 0xc4, 0x8a, 0xe0, 0xa6, 0xa4,
-	0xc9, 0x5d, 0x84, 0x86, 0x24, 0x66, 0x6e, 0xfc, 0x46, 0x7e, 0x36, 0xbf, 0x86, 0xcc, 0xa3, 0xd0,
-	0x82, 0x2e, 0xba, 0x4a, 0xce, 0xf9, 0x71, 0xee, 0xcc, 0x3d, 0x03, 0xff, 0x28, 0x11, 0xeb, 0x27,
-	0x6c, 0xde, 0xf3, 0x14, 0xc7, 0x75, 0x53, 0x51, 0xc5, 0x3a, 0xea, 0x33, 0xfc, 0x2b, 0xc9, 0x43,
-	0x95, 0x61, 0xa1, 0xfd, 0xd1, 0xa7, 0x05, 0xfd, 0x45, 0x22, 0xd6, 0x31, 0xbe, 0xb5, 0x28, 0x88,
-	0xfd, 0x01, 0x7b, 0x9e, 0x71, 0x2b, 0xb0, 0x42, 0x37, 0xb6, 0xe7, 0x19, 0x1b, 0x80, 0xd3, 0xe6,
-	0x19, 0xb7, 0x95, 0x21, 0x7f, 0xd9, 0x01, 0x74, 0x28, 0xa7, 0x02, 0xb9, 0x13, 0x58, 0xa1, 0x1f,
-	0x6b, 0xc1, 0x38, 0x74, 0xd3, 0xaa, 0x24, 0x2c, 0x89, 0xbb, 0xca, 0xdf, 0x48, 0x76, 0x02, 0x3d,
-	0x41, 0x49, 0x43, 0xcb, 0x84, 0x78, 0x47, 0x23, 0xa5, 0x23, 0x62, 0x87, 0xe0, 0x61, 0x99, 0x49,
-	0xe0, 0xe9, 0x59, 0x58, 0x66, 0x11, 0xb1, 0x23, 0xf0, 0x04, 0x25, 0xd4, 0x0a, 0xde, 0x0d, 0xac,
-	0xd0, 0x89, 0x8d, 0x62, 0xa7, 0x00, 0x69, 0x83, 0x09, 0xa1, 0x8a, 0xf4, 0x14, 0xf3, 0x8d, 0x13,
-	0x91, 0xc4, 0x6d, 0x9d, 0x6d, 0xb0, 0xaf, 0xb1, 0x71, 0x22, 0x1a, 0xbd, 0xc0, 0x40, 0x2e, 0x7a,
-	0x9f, 0x0b, 0x8a, 0x51, 0xd4, 0x55, 0x29, 0x90, 0x9d, 0x83, 0x2f, 0x0b, 0x59, 0x16, 0xb9, 0x20,
-	0x6e, 0x05, 0x4e, 0xd8, 0x9f, 0x0c, 0x74, 0x31, 0xe3, 0xc5, 0xa6, 0xa8, 0xb8, 0x47, 0x26, 0x26,
-	0x57, 0x4f, 0xab, 0xb6, 0x24, 0x55, 0xc7, 0xef, 0x58, 0x8b, 0xd1, 0x15, 0xfc, 0xd2, 0x0d, 0x9a,
-	0xa1, 0x67, 0xe0, 0xca, 0x84, 0x2a, 0xf1, 0xbb, 0x79, 0x8a, 0x4e, 0x3e, 0x6c, 0x5d, 0xbc, 0x79,
-	0x26, 0x36, 0x05, 0xb8, 0x55, 0xab, 0x48, 0x93, 0xb1, 0xad, 0x94, 0x79, 0x9a, 0xe1, 0xff, 0x1d,
-	0xcf, 0x1c, 0x76, 0x0d, 0xfd, 0x19, 0x92, 0xbc, 0xdd, 0x8f, 0xb9, 0xe3, 0x2d, 0x6f, 0x67, 0xfb,
-	0x29, 0xc0, 0x0c, 0xe9, 0xb1, 0xdc, 0xf3, 0xc8, 0x29, 0xc0, 0xb3, 0x6a, 0x75, 0xef, 0xd8, 0x1d,
-	0x16, 0xb8, 0x67, 0xec, 0xc6, 0x7b, 0x75, 0xc7, 0x17, 0xf5, 0x6a, 0xe5, 0x29, 0x76, 0xf9, 0x15,
-	0x00, 0x00, 0xff, 0xff, 0x88, 0x7f, 0x5c, 0x21, 0xdc, 0x02, 0x00, 0x00,
+	// 357 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x52, 0xcd, 0x6a, 0xf2, 0x40,
+	0x14, 0x25, 0x3f, 0x46, 0xbd, 0x7e, 0x3f, 0x7e, 0x83, 0x7e, 0x8c, 0x42, 0x21, 0xb8, 0x28, 0x59,
+	0x45, 0xb0, 0x50, 0x70, 0x53, 0xb0, 0x2d, 0x88, 0xd0, 0x52, 0x48, 0xed, 0xa2, 0xdd, 0x48, 0x34,
+	0x77, 0x11, 0x0c, 0x93, 0x34, 0x73, 0xd3, 0x77, 0xeb, 0x1b, 0xf4, 0xb1, 0xca, 0xfc, 0xb8, 0xb0,
+	0x94, 0x2e, 0xdc, 0xe5, 0x9c, 0xc3, 0xb9, 0x37, 0xe7, 0xdc, 0x81, 0x7f, 0x94, 0xca, 0xfd, 0x23,
+	0xd6, 0x6f, 0xf9, 0x0e, 0xe3, 0xaa, 0x2e, 0xa9, 0x64, 0x6d, 0x69, 0xe0, 0xf8, 0xaf, 0xd2, 0xee,
+	0xcb, 0x0c, 0x0b, 0xa3, 0x4c, 0x3e, 0x1c, 0xe8, 0xad, 0x53, 0xb9, 0x4f, 0xf0, 0xb5, 0x41, 0x49,
+	0xec, 0x0f, 0xb8, 0xab, 0x8c, 0x3b, 0xa1, 0x13, 0xf9, 0x89, 0xbb, 0xca, 0x58, 0x1f, 0xbc, 0x26,
+	0xcf, 0xb8, 0xab, 0x09, 0xf5, 0xc9, 0x06, 0xd0, 0xa2, 0x9c, 0x0a, 0xe4, 0x5e, 0xe8, 0x44, 0xdd,
+	0xc4, 0x00, 0xc6, 0xa1, 0xbd, 0x2b, 0x05, 0xa1, 0x20, 0xee, 0x6b, 0xfe, 0x00, 0xd9, 0x08, 0x3a,
+	0x92, 0xd2, 0x9a, 0x36, 0x29, 0xf1, 0x96, 0x91, 0x34, 0x5e, 0x10, 0x1b, 0x42, 0x80, 0x22, 0x53,
+	0x42, 0x60, 0x66, 0xa1, 0xc8, 0x16, 0xc4, 0xfe, 0x43, 0x20, 0x29, 0xa5, 0x46, 0xf2, 0x76, 0xe8,
+	0x44, 0x5e, 0x62, 0x11, 0x3b, 0x03, 0x68, 0xaa, 0x2c, 0x25, 0xd4, 0x96, 0x8e, 0xd6, 0xba, 0x96,
+	0x59, 0xd0, 0xe4, 0x19, 0xfa, 0x2a, 0xc9, 0x5d, 0x2e, 0x29, 0x41, 0x59, 0x95, 0x42, 0x22, 0x9b,
+	0x42, 0x57, 0x25, 0xde, 0x14, 0xb9, 0x24, 0xee, 0x84, 0x5e, 0xd4, 0x9b, 0xb1, 0xd8, 0x96, 0x11,
+	0xaf, 0x0f, 0x5d, 0x24, 0x1d, 0xb2, 0x46, 0x95, 0x6e, 0x57, 0x36, 0x82, 0x74, 0xe2, 0xdf, 0x89,
+	0x01, 0x93, 0x4b, 0xf8, 0x65, 0x4a, 0xb2, 0x63, 0xcf, 0xc1, 0x57, 0x0e, 0xdd, 0xd3, 0xf7, 0x13,
+	0xb5, 0x3e, 0x7b, 0x77, 0x4d, 0xbb, 0xf6, 0x1a, 0x6c, 0x0e, 0x70, 0x53, 0x63, 0x4a, 0xa8, 0x48,
+	0x36, 0x38, 0xf2, 0xd9, 0x0b, 0x8c, 0x87, 0x5f, 0x58, 0xbb, 0xf2, 0x0a, 0x7a, 0x4b, 0x24, 0xf5,
+	0x8f, 0x3f, 0x78, 0x47, 0x47, 0xec, 0x51, 0x13, 0x73, 0x80, 0x25, 0xd2, 0x83, 0x38, 0x61, 0xf5,
+	0x1c, 0xe0, 0x49, 0xb7, 0x7c, 0x92, 0xf5, 0x16, 0x0b, 0x3c, 0xc1, 0x7a, 0x1d, 0xbc, 0xf8, 0xf1,
+	0xb4, 0xda, 0x6e, 0x03, 0xfd, 0x50, 0x2f, 0x3e, 0x03, 0x00, 0x00, 0xff, 0xff, 0xea, 0x8a, 0x1d,
+	0xad, 0xd7, 0x02, 0x00, 0x00,
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// TaskServiceClient is the client API for TaskService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type TaskServiceClient interface {
+	CreateTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResponse, error)
+	GetListTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskListResponse, error)
+	GetOneTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResponse, error)
+	UpdateTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResponse, error)
+	DeleteTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResponse, error)
+}
+
+type taskServiceClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewTaskServiceClient(cc *grpc.ClientConn) TaskServiceClient {
+	return &taskServiceClient{cc}
+}
+
+func (c *taskServiceClient) CreateTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResponse, error) {
+	out := new(TaskResponse)
+	err := c.cc.Invoke(ctx, "/service.TaskService/CreateTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) GetListTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskListResponse, error) {
+	out := new(TaskListResponse)
+	err := c.cc.Invoke(ctx, "/service.TaskService/GetListTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) GetOneTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResponse, error) {
+	out := new(TaskResponse)
+	err := c.cc.Invoke(ctx, "/service.TaskService/GetOneTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) UpdateTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResponse, error) {
+	out := new(TaskResponse)
+	err := c.cc.Invoke(ctx, "/service.TaskService/UpdateTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *taskServiceClient) DeleteTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResponse, error) {
+	out := new(TaskResponse)
+	err := c.cc.Invoke(ctx, "/service.TaskService/DeleteTask", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// TaskServiceServer is the server API for TaskService service.
+type TaskServiceServer interface {
+	CreateTask(context.Context, *TaskRequest) (*TaskResponse, error)
+	GetListTask(context.Context, *TaskRequest) (*TaskListResponse, error)
+	GetOneTask(context.Context, *TaskRequest) (*TaskResponse, error)
+	UpdateTask(context.Context, *TaskRequest) (*TaskResponse, error)
+	DeleteTask(context.Context, *TaskRequest) (*TaskResponse, error)
+}
+
+// UnimplementedTaskServiceServer can be embedded to have forward compatible implementations.
+type UnimplementedTaskServiceServer struct {
+}
+
+func (*UnimplementedTaskServiceServer) CreateTask(ctx context.Context, req *TaskRequest) (*TaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTask not implemented")
+}
+func (*UnimplementedTaskServiceServer) GetListTask(ctx context.Context, req *TaskRequest) (*TaskListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListTask not implemented")
+}
+func (*UnimplementedTaskServiceServer) GetOneTask(ctx context.Context, req *TaskRequest) (*TaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOneTask not implemented")
+}
+func (*UnimplementedTaskServiceServer) UpdateTask(ctx context.Context, req *TaskRequest) (*TaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTask not implemented")
+}
+func (*UnimplementedTaskServiceServer) DeleteTask(ctx context.Context, req *TaskRequest) (*TaskResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTask not implemented")
+}
+
+func RegisterTaskServiceServer(s *grpc.Server, srv TaskServiceServer) {
+	s.RegisterService(&_TaskService_serviceDesc, srv)
+}
+
+func _TaskService_CreateTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).CreateTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.TaskService/CreateTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).CreateTask(ctx, req.(*TaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_GetListTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetListTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.TaskService/GetListTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetListTask(ctx, req.(*TaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_GetOneTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).GetOneTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.TaskService/GetOneTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).GetOneTask(ctx, req.(*TaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_UpdateTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).UpdateTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.TaskService/UpdateTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).UpdateTask(ctx, req.(*TaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TaskService_DeleteTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TaskRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TaskServiceServer).DeleteTask(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/service.TaskService/DeleteTask",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TaskServiceServer).DeleteTask(ctx, req.(*TaskRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _TaskService_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "service.TaskService",
+	HandlerType: (*TaskServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateTask",
+			Handler:    _TaskService_CreateTask_Handler,
+		},
+		{
+			MethodName: "GetListTask",
+			Handler:    _TaskService_GetListTask_Handler,
+		},
+		{
+			MethodName: "GetOneTask",
+			Handler:    _TaskService_GetOneTask_Handler,
+		},
+		{
+			MethodName: "UpdateTask",
+			Handler:    _TaskService_UpdateTask_Handler,
+		},
+		{
+			MethodName: "DeleteTask",
+			Handler:    _TaskService_DeleteTask_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "taskService.proto",
 }

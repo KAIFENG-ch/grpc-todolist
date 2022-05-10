@@ -4,3 +4,11 @@ rabbitmq:
   RabbiyMQPassword : guest
   RabbitMQHost : localhost
   RabbitMQPort : 5672
+
+sql:
+  Db : mysql
+  DbHost : 127.0.0.1
+  DbPort : 3306
+  DbUser : root
+  Password : 123456
+  DbName : MicroService

@@ -9,14 +9,14 @@ import (
 )
 
 func UserRegister(c *gin.Context) {
-	var user pb.UserRequest
-	err := c.Bind(&user)
+	var userReq pb.UserRequest
+	err := c.Bind(&userReq)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	userService := c.Keys["userService"].(pb.UserServiceServer)
-	userResp, err := userService.UserRegister(context.Background(), &user)
+	userService := c.Keys["userService"].(pb.UserServiceClient)
+	userResp, err := userService.UserRegister(context.Background(), &userReq)
 	if err != nil {
 		log.Println(err)
 		return

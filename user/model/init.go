@@ -9,8 +9,8 @@ import (
 var DB *gorm.DB
 
 func Database(dsn string) (err error) {
-	db,err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil{
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
 		panic(err)
 	}
 	sqlDB, err := db.DB()
@@ -19,7 +19,7 @@ func Database(dsn string) (err error) {
 	sqlDB.SetConnMaxIdleTime(time.Hour)
 	DB = db
 	err = DB.Set("gorm:table_option", "ENGINE=InnoDB").
-		AutoMigrate()
+		AutoMigrate(&User{})
 	if err != nil {
 		panic(err)
 	}
