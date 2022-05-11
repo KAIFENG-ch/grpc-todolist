@@ -12,7 +12,8 @@ message UserRequest {
 
 message UserDetailResponse {
   UserModel user_detail = 1;
-  uint32 code = 2;
+  string message = 2;
+  uint32 code = 3;
 }
 
 service UserService {

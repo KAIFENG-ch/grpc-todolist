@@ -10,7 +10,6 @@ type User struct {
 	Username  string `gorm:"not null"`
 	Password  string `gorm:"varchar(20);not null"`
 	Email     string
-	Status    string `gorm:"not null"`
 	Birthday  string `gorm:"default:20000101"`
 	Signature string `gorm:"default:This man is lazy."`
 	gorm.Model
@@ -18,7 +17,7 @@ type User struct {
 
 const PwdHard = 12
 
-func (receiver User) SetPwd(pwd string) (string, error) {
+func (receiver *User) SetPwd(pwd string) (string, error) {
 	pwdByte, err := bcrypt.GenerateFromPassword([]byte(pwd), PwdHard)
 	if err != nil {
 		return "", err
@@ -27,7 +26,7 @@ func (receiver User) SetPwd(pwd string) (string, error) {
 	return receiver.Password, err
 }
 
-func (receiver User) CheckPwd(pwd string) bool {
+func (receiver *User) CheckPwd(pwd string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(receiver.Password), []byte(pwd))
 	if err != nil {
 		return false

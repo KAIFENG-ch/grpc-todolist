@@ -3,9 +3,11 @@ package service
 import (
 	"context"
 	"errors"
+	"time"
 	"user/dao"
 	"user/model"
 	services "user/proto/proto"
+	"user/utils"
 )
 
 type UserService struct {
@@ -18,30 +20,47 @@ func (us *UserService) UserRegister(ctx context.Context, req *services.UserReque
 		err := errors.New("两次密码不一致")
 		return nil, err
 	}
-	userInfo, err := dao.FindUser(req.UserName)
-	if err != nil {
-		err = errors.New("用户名已存在")
+	_, ok := dao.FindUser(req.UserName)
+	if ok {
+		resp = &services.UserDetailResponse{Message: "用户名已存在", Code: 500}
+		return resp, nil
+	}
+	userInfo := model.User{
+		Username: req.UserName,
+		Password: req.Password,
 	}
 	err = dao.CreateUser(userInfo)
 	if err != nil {
 		return nil, err
 	}
-	resp.UserDetail = model.Build(userInfo)
-	resp.Code = 200
-	return
+	resp = &services.UserDetailResponse{
+		UserDetail: &services.UserModel{
+			UserName:  userInfo.Username,
+			CreatedAt: time.Now().Unix(),
+		},
+		Message: "创建成功！",
+		Code:    200,
+	}
+	return resp, nil
 }
 
 func (us *UserService) UserLogin(ctx context.Context, req *services.UserRequest) (resp *services.UserDetailResponse, err error) {
-	users, err := dao.FindUser(req.UserName)
-	if err != nil {
+	resp = new(services.UserDetailResponse)
+	user, ok := dao.FindUser(req.UserName)
+	if !ok {
+		err = errors.New("用户不存在")
 		resp.Code = 400
 		return
 	}
-	if users.CheckPwd(req.Password) {
+	if user.CheckPwd(req.Password) {
 		resp.Code = 400
 		return
 	}
-	resp.UserDetail = model.Build(users)
+	token, err := utils.GenerateToken(user.ID)
+	resp.UserDetail = &services.UserModel{
+		UserName: user.Username,
+	}
+	resp.Message = "token: " + token
 	resp.Code = 200
 	return
 }

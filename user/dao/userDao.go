@@ -4,15 +4,13 @@ import (
 	"user/model"
 )
 
-func FindUser(name string) (user model.User, err error) {
+func FindUser(name string) (user *model.User, ok bool) {
 	var count int64 = 0
-	if err := model.DB.Model(&model.User{}).Where("username=?", name).Count(&count).Error; err != nil {
-		return user, err
+	model.DB.Model(&model.User{}).Where("username=?", name).Count(&count)
+	if count > 0 {
+		return user, true
 	}
-	user = model.User{
-		Username: name,
-	}
-	return
+	return nil, false
 }
 
 func CreateUser(user model.User) (err error) {

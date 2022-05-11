@@ -33,7 +33,7 @@ func UserLogin(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	userService := c.Keys["userService"].(pb.UserServiceServer)
+	userService := c.Keys["userService"].(pb.UserServiceClient)
 	userResp, err := userService.UserLogin(context.Background(), &user)
 	if err != nil {
 		log.Println(err)
