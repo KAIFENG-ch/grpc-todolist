@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-var jwtSecret = []byte("TodoList")
+var jwtSecret = []byte("todoList")
 
 type Claims struct {
 	Id uint `json:"id"`
@@ -28,13 +28,9 @@ func GenerateToken(id uint32) (string, error) {
 }
 
 func ParseToken(token string) (*Claims, error) {
-	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (i interface{}, e error) {
+	claims := &Claims{}
+	_, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtSecret, nil
 	})
-	if tokenClaims != nil {
-		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
-			return claims, nil
-		}
-	}
-	return nil, err
+	return claims, err
 }

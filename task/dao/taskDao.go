@@ -6,7 +6,7 @@ import (
 )
 
 func CreateTask(task model.Task) (err error) {
-	err = model.DB.Model(&task).Error
+	err = model.DB.Model(&model.Task{}).Create(&task).Error
 	if err != nil {
 		log.Println(err)
 		return
@@ -14,8 +14,9 @@ func CreateTask(task model.Task) (err error) {
 	return
 }
 
-func FindListTask(status int64) (taskList []model.Task, err error) {
-	err = model.DB.Model(&model.Task{}).Where("status = ?", status).Find(&taskList).Error
+func FindListTask(status int64, id uint64) (taskList []model.Task, err error) {
+	err = model.DB.Model(&model.Task{}).Where("status = ? and uid = ?", status, id).
+		Find(&taskList).Error
 	if err != nil {
 		log.Println(err)
 		return
@@ -23,8 +24,10 @@ func FindListTask(status int64) (taskList []model.Task, err error) {
 	return
 }
 
-func FindOneTask(id uint64) (task model.Task, err error) {
-	err = model.DB.Model(&model.Task{}).Where("id = ?", id).First(&task).Error
+func FindOneTask(content string) (task []model.Task, err error) {
+	err = model.DB.Model(&model.Task{}).
+		Where("title like ? or content like ?", "%"+content+"%", "%"+content+"%").
+		Find(&task).Error
 	if err != nil {
 		log.Println(err)
 		return
@@ -32,8 +35,8 @@ func FindOneTask(id uint64) (task model.Task, err error) {
 	return
 }
 
-func UpdateTask(id uint64) (task model.Task, err error) {
-	err = model.DB.Model(&model.Task{}).Where("id = ?", id).First(&task).Error
+func UpdateTask(id uint64, uid uint64) (task model.Task, err error) {
+	err = model.DB.Model(&model.Task{}).Where("id = ? and uid = ?", id, uid).First(&task).Error
 	if err != nil {
 		log.Println(err)
 		return
@@ -46,9 +49,9 @@ func UpdateTask(id uint64) (task model.Task, err error) {
 	return
 }
 
-func DeleteTask(id uint64) (err error) {
+func DeleteTask(id uint64, uid uint64) (err error) {
 	var task model.Task
-	err = model.DB.Model(&model.Task{}).Where("id = ?", id).Delete(&task).Error
+	err = model.DB.Model(&model.Task{}).Where("id = ? and uid = ?", id, uid).Delete(&task).Error
 	if err != nil {
 		log.Println(err)
 		return

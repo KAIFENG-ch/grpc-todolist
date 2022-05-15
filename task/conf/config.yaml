@@ -11,4 +11,4 @@ sql:
   DbPort : 3306
   DbUser : root
   Password : 123456
-  DbName : MicroService
+  DbName : grpc_todolist

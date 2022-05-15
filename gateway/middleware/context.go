@@ -1,11 +1,8 @@
 package middleware
 
-import "github.com/gin-gonic/gin"
+var MicroService = make(map[string]interface{})
 
-func RegisterMiddleware(service []interface{}) gin.HandlerFunc {
-	return func(context *gin.Context) {
-		context.Keys = make(map[string]interface{})
-		context.Keys["userService"] = service[0]
-		context.Next()
-	}
+func RegisterMiddleware(services []interface{}) {
+	MicroService["userService"] = services[0]
+	MicroService["taskService"] = services[1]
 }

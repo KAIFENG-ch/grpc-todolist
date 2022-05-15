@@ -15,7 +15,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	taskService := pb.NewUserServiceClient(taskConn)
+	taskService := pb.NewTaskServiceClient(taskConn)
 	userConn, err := grpc.DialContext(ctx, "127.0.0.1:8002", grpc.WithInsecure())
 	if err != nil {
 		panic(err)

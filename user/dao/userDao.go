@@ -6,7 +6,7 @@ import (
 
 func FindUser(name string) (user *model.User, ok bool) {
 	var count int64 = 0
-	model.DB.Model(&model.User{}).Where("username=?", name).Count(&count)
+	model.DB.Model(&model.User{}).Where("username=?", name).First(&user).Count(&count)
 	if count > 0 {
 		return user, true
 	}

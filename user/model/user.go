@@ -3,7 +3,7 @@ package model
 import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	services "user/proto/proto"
+	services "user/proto/pb"
 )
 
 type User struct {
@@ -17,13 +17,9 @@ type User struct {
 
 const PwdHard = 12
 
-func (receiver *User) SetPwd(pwd string) (string, error) {
-	pwdByte, err := bcrypt.GenerateFromPassword([]byte(pwd), PwdHard)
-	if err != nil {
-		return "", err
-	}
-	receiver.Password = string(pwdByte)
-	return receiver.Password, err
+func SetPwd(pwd string) string {
+	pwdByte, _ := bcrypt.GenerateFromPassword([]byte(pwd), PwdHard)
+	return string(pwdByte)
 }
 
 func (receiver *User) CheckPwd(pwd string) bool {

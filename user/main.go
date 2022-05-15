@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 	"user/conf"
-	pb "user/proto/proto"
+	"user/proto/pb"
 	"user/register"
 	"user/service"
 )
