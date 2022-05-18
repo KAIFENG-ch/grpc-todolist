@@ -1,10 +1,57 @@
-version: "3"
+version: '3'
+
 services:
   gateway:
-    hostname: etcd-gateway
     image: gateway
+    container_name: etcd_gateway
+    build: ./gateway
     ports:
       - "8000:8000"
+    restart: always
+
+  user:
+    image: user
+    container_name: user
+    build: ./user
+    ports:
+      - "8002:8002"
+    environment:
+      MYSQL_DSN: "root:123456@tcp/grpc-todolist?charset=utf8&parseTime=True&loc=Local"
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+
+  task:
+    image: task
+    container_name: task
+    build: ./user
+    ports:
+      - "8001:8001"
+    environment:
+      MYSQL_DSN: "root:123456@tcp/grpc-todolist?charset=utf8&parseTime=True&loc=Local"
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: grpc-todolist
     volumes:
-      - /var/lib/etcd:/var/lib/etcd
-    
+      - arb/mysql:arb/mysql
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    volumes:
+      - /usr/local/redis:/usr/local/redis
+    ports:
+      - "6379:6379"
